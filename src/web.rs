@@ -24,7 +24,8 @@ struct ImportMap {
 
 pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     let manifests = fetch_manifests(&state.config).await.unwrap();
-    let tera = Tera::new("templates/**/*").unwrap();
+    let path = format!("{}/**/*", state.config.templates_dir.display());
+    let tera = Tera::new(path.as_str()).unwrap();
 
     let portals = ImportMap {
         imports: manifests.portals,

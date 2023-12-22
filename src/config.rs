@@ -8,8 +8,8 @@ use clap::Parser;
 pub struct Config {
     pub port: u16,
     pub public_dir: PathBuf,
+    pub templates_dir: PathBuf,
     pub manifest_cache: bool,
-    pub import_map_env: String,
     pub apm_manifest_url: String,
     pub notifications_manifest_url: String,
     pub comments_manifest_url: String,
@@ -37,10 +37,14 @@ impl Config {
             }
         };
 
-        // Validate if public dir exists
         let public_dir = Path::new(&config.public_dir);
         if !public_dir.exists() {
             return Err("Public dir does not exists.");
+        }
+
+        let templates_dir = Path::new(&config.templates_dir);
+        if !templates_dir.exists() {
+            return Err("Templates does not exists.");
         }
 
         Ok(config)
