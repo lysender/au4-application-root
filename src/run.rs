@@ -26,7 +26,7 @@ pub async fn run(config: Config) -> Result<()> {
 
     let routes_all = Router::new()
         .merge(routes_index(state.clone()))
-        .merge(routes_static(&config.public_dir))
+        .merge(routes_static(&config.frontend_dir))
         .fallback_service(routes_fallback(state))
         .layer(ServiceBuilder::new()
             .layer(TraceLayer::new_for_http()
@@ -49,13 +49,14 @@ pub async fn run(config: Config) -> Result<()> {
 }
 
 fn routes_static(dir: &PathBuf) -> Router {
+    let target_dir = dir.join("public");
     Router::new()
-        .nest_service("/assets", get_service(ServeDir::new(dir.join("assets"))))
-        .nest_service("/css", get_service(ServeDir::new(dir.join("css"))))
-        .nest_service("/images", get_service(ServeDir::new(dir.join("images"))))
-        .nest_service("/js", get_service(ServeDir::new(dir.join("js"))))
-        .nest_service("/manifest.json", get_service(ServeFile::new(dir.join("manifest.json"))))
-        .nest_service("/favicon.ico", get_service(ServeFile::new(dir.join("favicon.ico"))))
+        .nest_service("/assets", get_service(ServeDir::new(target_dir.join("assets"))))
+        .nest_service("/css", get_service(ServeDir::new(target_dir.join("css"))))
+        .nest_service("/images", get_service(ServeDir::new(target_dir.join("images"))))
+        .nest_service("/js", get_service(ServeDir::new(target_dir.join("js"))))
+        .nest_service("/manifest.json", get_service(ServeFile::new(target_dir.join("manifest.json"))))
+        .nest_service("/favicon.ico", get_service(ServeFile::new(target_dir.join("favicon.ico"))))
 }
 
 fn routes_index(state: AppState) -> Router {

@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use serde::Serialize;
 use axum::{response::{IntoResponse, Html}, extract::State};
 
-use crate::{run::AppState, manifest::get_lib_import_map};
+use crate::{run::AppState, manifest::{get_lib_import_map, get_root_config_url}};
 use crate::manifest::fetch_manifests;
 
 #[derive(Serialize)]
@@ -26,6 +26,7 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     let manifests = fetch_manifests(&state.config).await.unwrap();
     let path = format!("{}/**/*", state.config.templates_dir.display());
     let tera = Tera::new(path.as_str()).unwrap();
+    let root_config_url = get_root_config_url(&state.config).expect("Unable to get root config url.");
 
     let portals = ImportMap {
         imports: manifests.portals,

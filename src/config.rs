@@ -7,7 +7,7 @@ use clap::Parser;
 #[derive(Clone, Deserialize)]
 pub struct Config {
     pub port: u16,
-    pub public_dir: PathBuf,
+    pub frontend_dir: PathBuf,
     pub templates_dir: PathBuf,
     pub manifest_cache: bool,
     pub apm_manifest_url: String,
@@ -37,14 +37,14 @@ impl Config {
             }
         };
 
-        let public_dir = Path::new(&config.public_dir);
-        if !public_dir.exists() {
-            return Err("Public dir does not exists.");
+        let frontend_dir = Path::new(&config.frontend_dir);
+        if !frontend_dir.exists() {
+            return Err("Frontend dir does not exists.");
         }
 
         let templates_dir = Path::new(&config.templates_dir);
         if !templates_dir.exists() {
-            return Err("Templates does not exists.");
+            return Err("Templates dir does not exists.");
         }
 
         Ok(config)

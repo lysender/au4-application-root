@@ -1,19 +1,25 @@
 
+use std::fs;
 use anyhow::anyhow;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use crate::{error::Result, config::Config};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize)]
 struct AssetManifest {
     files: HashMap<String, String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize)]
 pub struct AssetImport {
     pub portals: HashMap<String, String>,
     pub css_files: Vec<String>,
+}
+
+#[derive(Deserialize)]
+struct RootConfig {
+    url: String,
 }
 
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
@@ -41,6 +47,13 @@ pub fn get_lib_import_map() -> HashMap<String, String> {
         map.insert(String::from(*name), String::from(*url));
     }
     map
+}
+
+pub fn get_root_config_url(config: &Config) -> Result<String> {
+    let filename = config.frontend_dir.join("single-spa.json");
+    let json_string = fs::read_to_string(filename)?;
+    let root_config: RootConfig = serde_json::from_str(json_string.as_str())?;
+    Ok(root_config.url)
 }
 
 pub async fn fetch_manifests(config: &Config) -> Result<AssetImport> {
