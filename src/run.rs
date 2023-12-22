@@ -6,7 +6,6 @@ use axum::Router;
 use axum::routing::get_service;
 use clap::Parser;
 use tokio::net::TcpListener;
-use tracing::info;
 use tower_http::cors::{CorsLayer, Any};
 use tower_http::services::ServeDir;
 use tower::ServiceBuilder;
