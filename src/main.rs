@@ -2,6 +2,8 @@
 mod error;
 mod config;
 mod run;
+mod web;
+mod manifest;
 
 use clap::Parser;
 use std::process;
@@ -31,7 +33,7 @@ async fn main() {
         process::exit(1);
     });
 
-    if let Err(e) = run(&config).await {
+    if let Err(e) = run(config).await {
         eprintln!("Application error: {e}");
         process::exit(1);
     }

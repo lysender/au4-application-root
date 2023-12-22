@@ -4,7 +4,7 @@ use std::path::Path;
 use serde::Deserialize;
 use clap::Parser;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct Config {
     pub port: u16,
     pub public_dir: PathBuf,
@@ -48,7 +48,7 @@ impl Config {
 }
 
 /// Web server to serve react micro-frontends
-#[derive(Parser, Debug)]
+#[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     /// TOML configuration file

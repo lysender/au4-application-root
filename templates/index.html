@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" style="overflow-y: hidden;">
+<head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script type="systemjs-importmap">
+        {
+            "imports": {
+                "@portal/root-config": "{{ spa_config_url | safe }}"
+            }
+        }
+    </script>
+    <script type="systemjs-importmap">{{ portals | json_encode() | safe }}</script>
+
+    <script type="systemjs-importmap">{{ import_map | json_encode() | safe }}</script>
+
+    <script src="/assets/root/js/vendors/import-map-overrides/2.4.1/import-map-overrides.js"></script>
+
+    <!-- SystemJS dependencies -->
+    <script src="/assets/root/js/vendors/systemjs/6.11.0/system.min.js"></script>
+    <script src="/assets/root/js/vendors/systemjs/6.11.0/extras/amd.min.js"></script>
+    <script src="/assets/root/js/vendors/systemjs/6.11.0/extras/named-register.min.js"></script>
+
+    <!-- Each of the app CSS files goes here -->
+    {% for url in css_files %}
+    <link rel="stylesheet" href="{{ url | safe }}">
+    {% endfor %}
+
+    <!-- Load the application -->
+    <script>
+        var STRIPE_PK = '{{ stripe_publishable_key }}';
+        var SystemJS = System;
+        System.import('@portal/root-config')
+    </script>
+    <title>Collabrics</title>
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="apm-app"></div>
+    {% if ga_tag_id %}
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_tag_id }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', '{{ ga_tag_id }}');
+        </script>
+    {% endif %}
+</body>
+</html>
