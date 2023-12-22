@@ -1,0 +1,13 @@
+port = 8400
+public_dir = "./public"
+manifest_cache = false
+import_map_env = "development"
+apm_manifest_url = "http://127.0.0.1:8401/assets/apm/asset-manifest.json"
+notifications_manifest_url = "http://127.0.0.1:8402/assets/notifications/asset-manifest.json"
+comments_manifest_url = "http://127.0.0.1:8403/assets/comments/asset-manifest.json"
+admin_manifest_url = "http://127.0.0.1:8404/assets/admin/asset-manifest.json"
+ga_tag_id = ""
+stripe_publishable_key = ""
+new_relic_app_name = "application-root-dev"
+# new_relic_license_key = ""
+
