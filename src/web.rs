@@ -1,7 +1,8 @@
 
-use tera::{Tera, Context};
+use tera::Context;
 use std::collections::HashMap;
 use serde::Serialize;
+use axum::http::HeaderMap;
 use axum::{response::{IntoResponse, Html}, extract::State};
 
 use crate::{run::AppState, manifest::{get_lib_import_map, get_root_config_url}};
@@ -24,8 +25,6 @@ struct ImportMap {
 
 pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     let manifests = fetch_manifests(&state.config).await.unwrap();
-    let path = format!("{}/**/*", state.config.templates_dir.display());
-    let tera = Tera::new(path.as_str()).unwrap();
     let root_config_url = get_root_config_url(&state.config).expect("Unable to get root config url.");
 
     let portals = ImportMap {
@@ -43,5 +42,12 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
         import_map,
         css_files: manifests.css_files,
     };
-    Html(tera.render("index.html", &Context::from_serialize(&data).unwrap()).unwrap())
+
+    let mut headers = HeaderMap::new();
+    headers.insert("Surrogate-Control", "no-store".parse().unwrap());
+    headers.insert("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate".parse().unwrap());
+    headers.insert("Pragma", "no-cache".parse().unwrap());
+    headers.insert("Expires", "0".parse().unwrap());
+
+    (headers, Html(state.tera.render("index.html", &Context::from_serialize(&data).unwrap()).unwrap()))
 }
