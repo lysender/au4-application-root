@@ -50,7 +50,7 @@ pub fn get_lib_import_map() -> HashMap<String, String> {
 }
 
 pub fn get_root_config_url(config: &Config) -> Result<String> {
-    let filename = config.frontend_dir.join("single-spa.json");
+    let filename = config.frontend_dir.join("spa-config.json");
     let json_string = fs::read_to_string(filename)?;
     let root_config: RootConfig = serde_json::from_str(json_string.as_str())?;
     Ok(root_config.url)

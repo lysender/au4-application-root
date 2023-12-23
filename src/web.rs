@@ -38,7 +38,7 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     let data = IndexData {
         ga_tag_id: state.config.ga_tag_id,
         stripe_publishable_key: state.config.stripe_publishable_key,
-        spa_config_url: "/js/root-config/single-spa.config.js".to_string(),
+        spa_config_url: root_config_url,
         portals,
         import_map,
         css_files: manifests.css_files,
