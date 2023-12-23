@@ -20,7 +20,7 @@ function copyJsConfig(callback) {
   const prefix = (new Date()).getTime().toString();
   const source = path.resolve(__dirname, '../dist/root-config/single-spa.config.js');
   const target = path.resolve(__dirname, '../public/js/root-config/single-spa.config.js');
-  const prefixedTarget = path.resolve(__dirname, '../public/js/' + prefix + '.single-spa.config.js');
+  const prefixedTarget = path.resolve(__dirname, '../public/js/root-config/' + prefix + '.single-spa.config.js');
   const url = '/js/root-config/' + prefix + '.single-spa.config.js';
 
   Promise.all([
@@ -35,7 +35,7 @@ function copyJsConfig(callback) {
 }
 
 function updateConfigJson(url) {
-  const target = path.resolve(__dirname, './spa-config.json');
+  const target = path.resolve(__dirname, '../spa-config.json');
   const data = { url };
   fs.writeFile(target, JSON.stringify(data), function(err) {
     if (err) {
