@@ -8,13 +8,12 @@ use clap::Parser;
 pub struct Config {
     pub port: u16,
     pub frontend_dir: PathBuf,
-    pub templates_dir: PathBuf,
     pub manifest_cache: bool,
     pub apm_manifest_url: String,
     pub notifications_manifest_url: String,
     pub comments_manifest_url: String,
     pub admin_manifest_url: String,
-    pub ga_tag_id: String,
+    pub ga_tag_id: Option<String>,
     pub stripe_publishable_key: String,
     pub new_relic_app_name: String,
     pub new_relic_license_key: Option<String>,
@@ -40,11 +39,6 @@ impl Config {
         let frontend_dir = Path::new(&config.frontend_dir);
         if !frontend_dir.exists() {
             return Err("Frontend dir does not exists.");
-        }
-
-        let templates_dir = Path::new(&config.templates_dir);
-        if !templates_dir.exists() {
-            return Err("Templates dir does not exists.");
         }
 
         Ok(config)

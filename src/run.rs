@@ -1,6 +1,5 @@
 
 use axum::Router;
-use tera::Tera;
 use std::path::PathBuf;
 use axum::routing::{get_service, get};
 use axum::extract::FromRef;
@@ -18,15 +17,11 @@ use crate::web::handler_index;
 #[derive(Clone, FromRef)]
 pub struct AppState {
     pub config: Config,
-    pub tera: Tera,
 }
 
 pub async fn run(config: Config) -> Result<()> {
-    let path = format!("{}/**/*", config.templates_dir.display());
-    let tera = Tera::new(path.as_str())?;
     let state = AppState {
         config: config.clone(),
-        tera,
     };
 
     let routes_all = Router::new()

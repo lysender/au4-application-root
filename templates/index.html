@@ -10,13 +10,13 @@
     <script type="systemjs-importmap">
         {
             "imports": {
-                "@portal/root-config": "{{ spa_config_url | safe }}"
+                "@portal/root-config": "{{ spa_config_url|safe }}"
             }
         }
     </script>
-    <script type="systemjs-importmap">{{ portals | json_encode() | safe }}</script>
+    <script type="systemjs-importmap">{{ portals|json|safe }}</script>
 
-    <script type="systemjs-importmap">{{ import_map | json_encode() | safe }}</script>
+    <script type="systemjs-importmap">{{ import_map|json|safe }}</script>
 
     <script src="/assets/root/js/vendors/import-map-overrides/2.4.1/import-map-overrides.js"></script>
 
@@ -27,7 +27,7 @@
 
     <!-- Each of the app CSS files goes here -->
     {% for url in css_files %}
-    <link rel="stylesheet" href="{{ url | safe }}">
+    <link rel="stylesheet" href="{{ url|safe }}">
     {% endfor %}
 
     <!-- Load the application -->
@@ -36,21 +36,23 @@
         var SystemJS = System;
         System.import('@portal/root-config')
     </script>
-    <title>Collabrics</title>
+    <title>Collab Mate</title>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="apm-app"></div>
-    {% if ga_tag_id %}
+    {% match ga_tag_id %}
+        {% when Some with (val) %}
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_tag_id }}"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ val }}"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', '{{ ga_tag_id }}');
+            gtag('config', '{{ val }}');
         </script>
-    {% endif %}
+        {% when None %}
+    {% endmatch %}
 </body>
 </html>

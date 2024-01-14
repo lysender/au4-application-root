@@ -1,5 +1,5 @@
 
-use tera::Context;
+use askama::Template;
 use std::collections::HashMap;
 use serde::Serialize;
 use axum::http::HeaderMap;
@@ -8,9 +8,10 @@ use axum::{response::{IntoResponse, Html}, extract::State};
 use crate::{run::AppState, manifest::{get_lib_import_map, get_root_config_url}};
 use crate::manifest::fetch_manifests;
 
-#[derive(Serialize)]
+#[derive(Template)]
+#[template(path = "index.html")]
 struct IndexData {
-    ga_tag_id: String,
+    ga_tag_id: Option<String>,
     stripe_publishable_key: String,
     spa_config_url: String,
     portals: ImportMap,
@@ -34,7 +35,7 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
         imports: get_lib_import_map(),
     };
 
-    let data = IndexData {
+    let tpl = IndexData {
         ga_tag_id: state.config.ga_tag_id,
         stripe_publishable_key: state.config.stripe_publishable_key,
         spa_config_url: root_config_url,
@@ -49,5 +50,5 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     headers.insert("Pragma", "no-cache".parse().unwrap());
     headers.insert("Expires", "0".parse().unwrap());
 
-    (headers, Html(state.tera.render("index.html", &Context::from_serialize(&data).unwrap()).unwrap()))
+    (headers, Html(tpl.render().unwrap()))
 }

@@ -26,7 +26,6 @@ async fn main() {
         .compact()
         .init();
 
-
     let args = Args::parse();
     let config = Config::build(args.config.as_path()).unwrap_or_else(|err| {
         eprintln!("{err}");

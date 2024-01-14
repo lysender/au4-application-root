@@ -1,6 +1,5 @@
 port = 8400
 frontend_dir = "/path/to/frontend"
-templates_dir = "/path/to/templates"
 manifest_cache = false
 apm_manifest_url = "http://127.0.0.1:8401/assets/apm/asset-manifest.json"
 notifications_manifest_url = "http://127.0.0.1:8402/assets/notifications/asset-manifest.json"
