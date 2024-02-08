@@ -1,4 +1,3 @@
-
 use askama::Template;
 use std::collections::HashMap;
 use serde::Serialize;

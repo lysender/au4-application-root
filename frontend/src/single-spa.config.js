@@ -1,4 +1,3 @@
-
 import * as singleSpa from 'single-spa'
 import * as isActive from './activity-fn.js'
 

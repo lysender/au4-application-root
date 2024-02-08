@@ -1,4 +1,3 @@
-
 export function prefix(location, ...prefixes) {
   return prefixes.some(
     prefix => (

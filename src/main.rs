@@ -1,4 +1,3 @@
-
 mod error;
 mod config;
 mod run;
