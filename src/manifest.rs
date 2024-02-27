@@ -1,9 +1,9 @@
-use std::fs;
+use crate::{config::Config, error::Result};
 use anyhow::anyhow;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use crate::{error::Result, config::Config};
+use std::fs;
 
 #[derive(Deserialize, Serialize)]
 struct AssetManifest {
@@ -25,19 +25,52 @@ const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 const JSON_CONTENT_TYPE: &str = "application/json";
 
 const LIB_IMPORT_MAP: [(&'static str, &'static str); 13] = [
-    ("react", "/assets/root/js/vendors/react/18.2.0/umd/react.production.min.js"),
-    ("react-dom", "/assets/root/js/vendors/react-dom/18.2.0/umd/react-dom.production.min.js"),
-    ("react-dom/server", "/assets/root/js/vendors/react-dom/18.2.0/umd/react-dom-server.browser.production.min.js"),
-    ("single-spa", "/assets/root/js/vendors/single-spa/5.9.4/system/single-spa.min.js"),
-    ("lodash", "/assets/root/js/vendors/lodash/4.17.21/lodash.min.js"),
+    (
+        "react",
+        "/assets/root/js/vendors/react/18.2.0/umd/react.production.min.js",
+    ),
+    (
+        "react-dom",
+        "/assets/root/js/vendors/react-dom/18.2.0/umd/react-dom.production.min.js",
+    ),
+    (
+        "react-dom/server",
+        "/assets/root/js/vendors/react-dom/18.2.0/umd/react-dom-server.browser.production.min.js",
+    ),
+    (
+        "single-spa",
+        "/assets/root/js/vendors/single-spa/5.9.4/system/single-spa.min.js",
+    ),
+    (
+        "lodash",
+        "/assets/root/js/vendors/lodash/4.17.21/lodash.min.js",
+    ),
     ("axios", "/assets/root/js/vendors/axios/0.26.1/axios.min.js"),
     ("antd", "/assets/root/js/vendors/antd/4.24.6/antd.min.js"),
-    ("immutable", "/assets/root/js/vendors/immutable/3.7.6/immutable.min.js"),
-    ("@ant-design/icons", "/assets/root/js/vendors/ant-design-icons/4.7.0/index.umd.min.js"),
-    ("react-virtualized", "/assets/root/js/vendors/react-virtualized/9.22.3/react-virtualized.min.js"),
-    ("react-beautiful-dnd", "/assets/root/js/vendors/react-beautiful-dnd/13.1.0/react-beautiful-dnd.min.js"),
-    ("react-query", "/assets/root/js/vendors/react-query/3.39.3/react-query.production.js"),
-    ("moment", "/assets/root/js/vendors/moment/2.29.1/moment.min.js"),
+    (
+        "immutable",
+        "/assets/root/js/vendors/immutable/3.7.6/immutable.min.js",
+    ),
+    (
+        "@ant-design/icons",
+        "/assets/root/js/vendors/ant-design-icons/4.7.0/index.umd.min.js",
+    ),
+    (
+        "react-virtualized",
+        "/assets/root/js/vendors/react-virtualized/9.22.3/react-virtualized.min.js",
+    ),
+    (
+        "react-beautiful-dnd",
+        "/assets/root/js/vendors/react-beautiful-dnd/13.1.0/react-beautiful-dnd.min.js",
+    ),
+    (
+        "react-query",
+        "/assets/root/js/vendors/react-query/3.39.3/react-query.production.js",
+    ),
+    (
+        "moment",
+        "/assets/root/js/vendors/moment/2.29.1/moment.min.js",
+    ),
 ];
 
 pub fn get_lib_import_map() -> HashMap<String, String> {
@@ -92,6 +125,10 @@ async fn fetch_manifest(name: &str, url: &str) -> Result<AssetManifest> {
         let manifest: AssetManifest = response.json().await?;
         Ok(manifest)
     } else {
-        Err(anyhow!("Unable to fetch asset manifest for {}. Error: {}", name, response.status()))
+        Err(anyhow!(
+            "Unable to fetch asset manifest for {}. Error: {}",
+            name,
+            response.status()
+        ))
     }
 }

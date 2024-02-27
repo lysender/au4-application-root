@@ -1,23 +1,20 @@
-mod error;
 mod config;
+mod error;
+mod manifest;
 mod run;
 mod web;
-mod manifest;
 
 use clap::Parser;
 use std::process;
 
-use run::run;
 use config::{Args, Config};
+use run::run;
 
 #[tokio::main]
 async fn main() {
     // Set the RUST_LOG, if it hasn't been explicitly defined
     if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var(
-            "RUST_LOG",
-            "appplication_root=info,tower_http=info",
-        )
+        std::env::set_var("RUST_LOG", "appplication_root=info,tower_http=info")
     }
 
     tracing_subscriber::fmt()

@@ -1,11 +1,17 @@
 use askama::Template;
-use std::collections::HashMap;
-use serde::Serialize;
 use axum::http::HeaderMap;
-use axum::{response::{IntoResponse, Html}, extract::State};
+use axum::{
+    extract::State,
+    response::{Html, IntoResponse},
+};
+use serde::Serialize;
+use std::collections::HashMap;
 
-use crate::{run::AppState, manifest::{get_lib_import_map, get_root_config_url}};
 use crate::manifest::fetch_manifests;
+use crate::{
+    manifest::{get_lib_import_map, get_root_config_url},
+    run::AppState,
+};
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -25,7 +31,8 @@ struct ImportMap {
 
 pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     let manifests = fetch_manifests(&state.config).await.unwrap();
-    let root_config_url = get_root_config_url(&state.config).expect("Unable to get root config url.");
+    let root_config_url =
+        get_root_config_url(&state.config).expect("Unable to get root config url.");
 
     let portals = ImportMap {
         imports: manifests.portals,
@@ -45,7 +52,12 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
 
     let mut headers = HeaderMap::new();
     headers.insert("Surrogate-Control", "no-store".parse().unwrap());
-    headers.insert("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate".parse().unwrap());
+    headers.insert(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, proxy-revalidate"
+            .parse()
+            .unwrap(),
+    );
     headers.insert("Pragma", "no-cache".parse().unwrap());
     headers.insert("Expires", "0".parse().unwrap());
 
