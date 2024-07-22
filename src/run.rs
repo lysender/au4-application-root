@@ -2,6 +2,7 @@ use axum::extract::FromRef;
 use axum::routing::{get, get_service};
 use axum::Router;
 use std::path::PathBuf;
+use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::services::{ServeDir, ServeFile};
@@ -15,17 +16,20 @@ use crate::web::handler_index;
 
 #[derive(Clone, FromRef)]
 pub struct AppState {
-    pub config: Config,
+    pub config: Arc<Config>,
 }
 
 pub async fn run(config: Config) -> Result<()> {
+    let frontend_dir = config.frontend_dir.clone();
+    let port = config.port;
+
     let state = AppState {
-        config: config.clone(),
+        config: Arc::new(config),
     };
 
     let routes_all = Router::new()
         .merge(routes_index(state.clone()))
-        .merge(routes_static(&config.frontend_dir))
+        .merge(routes_static(&frontend_dir))
         .fallback_service(routes_fallback(state))
         .layer(
             ServiceBuilder::new().layer(
@@ -37,7 +41,7 @@ pub async fn run(config: Config) -> Result<()> {
 
     // Setup the server
     let ip = "127.0.0.1";
-    let addr = format!("{}:{}", ip, config.port);
+    let addr = format!("{}:{}", ip, port);
     info!("Listening on {}", addr);
 
     let listener = TcpListener::bind(addr).await.unwrap();

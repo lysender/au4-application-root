@@ -30,9 +30,9 @@ struct ImportMap {
 }
 
 pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
-    let manifests = fetch_manifests(&state.config).await.unwrap();
-    let root_config_url =
-        get_root_config_url(&state.config).expect("Unable to get root config url.");
+    let config = state.config.clone();
+    let manifests = fetch_manifests(&config).await.unwrap();
+    let root_config_url = get_root_config_url(&config).expect("Unable to get root config url.");
 
     let portals = ImportMap {
         imports: manifests.portals,
@@ -42,8 +42,8 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
     };
 
     let tpl = IndexData {
-        ga_tag_id: state.config.ga_tag_id,
-        stripe_publishable_key: state.config.stripe_publishable_key,
+        ga_tag_id: config.ga_tag_id.clone(),
+        stripe_publishable_key: config.stripe_publishable_key.clone(),
         spa_config_url: root_config_url,
         portals,
         import_map,
