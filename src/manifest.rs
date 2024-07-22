@@ -46,7 +46,7 @@ const LIB_IMPORT_MAP: [(&'static str, &'static str); 13] = [
         "/assets/root/js/vendors/lodash/4.17.21/lodash.min.js",
     ),
     ("axios", "/assets/root/js/vendors/axios/0.26.1/axios.min.js"),
-    ("antd", "/assets/root/js/vendors/antd/4.24.6/antd.min.js"),
+    ("antd", "/assets/root/js/vendors/antd/5.19.3/antd.min.js"),
     (
         "immutable",
         "/assets/root/js/vendors/immutable/3.7.6/immutable.min.js",
