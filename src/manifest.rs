@@ -24,7 +24,7 @@ struct RootConfig {
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
 const JSON_CONTENT_TYPE: &str = "application/json";
 
-const LIB_IMPORT_MAP: [(&'static str, &'static str); 13] = [
+const LIB_IMPORT_MAP: [(&'static str, &'static str); 15] = [
     (
         "react",
         "/assets/root/js/vendors/react/18.2.0/umd/react.production.min.js",
