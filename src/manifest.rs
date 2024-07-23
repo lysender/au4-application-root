@@ -68,6 +68,11 @@ const LIB_IMPORT_MAP: [(&'static str, &'static str); 13] = [
         "/assets/root/js/vendors/react-query/3.39.3/react-query.production.js",
     ),
     (
+        "dayjs",
+        "/assets/root/js/vendors/dayjs/1.11.12/dayjs.min.js",
+    ),
+    ("luxon", "/assets/root/js/vendors/luxon/3.4.4/dayjs.min.js"),
+    (
         "moment",
         "/assets/root/js/vendors/moment/2.29.1/moment.min.js",
     ),
