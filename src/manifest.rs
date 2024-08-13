@@ -17,11 +17,6 @@ pub struct AssetImport {
 
 #[derive(Deserialize)]
 pub struct RootConfig {
-    pub url: String,
-}
-
-#[derive(Deserialize)]
-pub struct RootConfigV2 {
     #[serde(rename = "src/root-config-legacy.js")]
     pub entry: AssetEntry,
 }
@@ -29,11 +24,6 @@ pub struct RootConfigV2 {
 #[derive(Deserialize)]
 pub struct AssetEntry {
     pub file: String,
-    pub name: String,
-    pub src: String,
-
-    #[serde(rename = "isEntry")]
-    pub is_entry: bool,
 }
 
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
@@ -105,8 +95,8 @@ pub fn get_lib_import_map() -> HashMap<String, String> {
     map
 }
 
-pub fn get_root_config_url(config: &Config) -> Result<RootConfig> {
-    let filename = config.frontend_dir.join("spa-config.json");
+pub fn get_root_config(config: &Config) -> Result<RootConfig> {
+    let filename = config.frontend_dir.join("dist").join("manifest.json");
     match fs::read_to_string(filename) {
         Ok(json) => match serde_json::from_str(json.as_str()) {
             Ok(root) => Ok(root),

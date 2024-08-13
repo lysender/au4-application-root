@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use crate::manifest::fetch_manifests;
 use crate::Result;
 use crate::{
-    manifest::{get_lib_import_map, get_root_config_url},
+    manifest::{get_lib_import_map, get_root_config},
     run::AppState,
 };
 
@@ -30,7 +30,7 @@ struct ImportMap {
 pub async fn handler_index(State(state): State<AppState>) -> Result<Response<Body>> {
     let config = state.config.clone();
     let manifests = fetch_manifests(&config).await?;
-    let root_config = get_root_config_url(&config)?;
+    let root_config = get_root_config(&config)?;
 
     let portals = ImportMap {
         imports: manifests.portals,
@@ -42,7 +42,7 @@ pub async fn handler_index(State(state): State<AppState>) -> Result<Response<Bod
     let tpl = IndexData {
         ga_tag_id: config.ga_tag_id.clone(),
         stripe_publishable_key: config.stripe_publishable_key.clone(),
-        spa_config_url: root_config.url,
+        spa_config_url: format!("/{}", root_config.entry.file),
         portals,
         import_map,
         css_files: manifests.css_files,
