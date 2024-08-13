@@ -3,6 +3,8 @@ use serde::Deserialize;
 use std::path::Path;
 use std::{fs, path::PathBuf};
 
+use crate::Result;
+
 #[derive(Clone, Deserialize)]
 pub struct Config {
     pub port: u16,
@@ -19,11 +21,11 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn build(filename: &Path) -> Result<Config, &'static str> {
+    pub fn build(filename: &Path) -> Result<Config> {
         let toml_string = match fs::read_to_string(filename) {
             Ok(str) => str,
             Err(_) => {
-                return Err("Unable to read config file.");
+                return Err("Unable to read config file.".into());
             }
         };
 
@@ -31,13 +33,13 @@ impl Config {
             Ok(value) => value,
             Err(err) => {
                 println!("{:?}", err);
-                return Err("Unable to parse config file.");
+                return Err("Unable to parse config file.".into());
             }
         };
 
         let frontend_dir = Path::new(&config.frontend_dir);
         if !frontend_dir.exists() {
-            return Err("Frontend dir does not exists.");
+            return Err("Frontend dir does not exists.".into());
         }
 
         Ok(config)

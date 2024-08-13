@@ -7,8 +7,11 @@ mod web;
 use clap::Parser;
 use std::process;
 
-use config::{Args, Config};
 use run::run;
+
+// Re-exports
+pub use config::*;
+pub use error::{Error, Result};
 
 #[tokio::main]
 async fn main() {

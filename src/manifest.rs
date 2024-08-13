@@ -1,13 +1,12 @@
-use crate::{config::Config, error::Result};
-use anyhow::anyhow;
+use crate::{Config, Error, Result};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 
 #[derive(Deserialize, Serialize)]
-struct AssetManifest {
-    files: HashMap<String, String>,
+pub struct AssetManifest {
+    pub files: HashMap<String, String>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -17,35 +16,39 @@ pub struct AssetImport {
 }
 
 #[derive(Deserialize)]
-struct RootConfig {
-    url: String,
+pub struct RootConfig {
+    pub url: String,
 }
 
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
 const JSON_CONTENT_TYPE: &str = "application/json";
 
-const LIB_IMPORT_MAP: [(&'static str, &'static str); 15] = [
+const LIB_IMPORT_MAP: [(&'static str, &'static str); 16] = [
+    (
+        "React",
+        "/assets/root/js/vendors/react/18.3.1/umd/react.production.min.js",
+    ),
     (
         "react",
-        "/assets/root/js/vendors/react/18.2.0/umd/react.production.min.js",
+        "/assets/root/js/vendors/react/18.3.1/umd/react.production.min.js",
     ),
     (
         "react-dom",
-        "/assets/root/js/vendors/react-dom/18.2.0/umd/react-dom.production.min.js",
+        "/assets/root/js/vendors/react-dom/18.3.1/umd/react-dom.production.min.js",
     ),
     (
         "react-dom/server",
-        "/assets/root/js/vendors/react-dom/18.2.0/umd/react-dom-server.browser.production.min.js",
+        "/assets/root/js/vendors/react-dom/18.3.1/umd/react-dom-server.browser.production.min.js",
     ),
     (
         "single-spa",
-        "/assets/root/js/vendors/single-spa/5.9.4/system/single-spa.min.js",
+        "/assets/root/js/vendors/single-spa/6.0.1/system/single-spa.min.js",
     ),
     (
         "lodash",
         "/assets/root/js/vendors/lodash/4.17.21/lodash.min.js",
     ),
-    ("axios", "/assets/root/js/vendors/axios/0.26.1/axios.min.js"),
+    ("axios", "/assets/root/js/vendors/axios/0.28.1/axios.min.js"),
     ("antd", "/assets/root/js/vendors/antd/5.19.3/antd.min.js"),
     (
         "immutable",
@@ -53,7 +56,7 @@ const LIB_IMPORT_MAP: [(&'static str, &'static str); 15] = [
     ),
     (
         "@ant-design/icons",
-        "/assets/root/js/vendors/ant-design-icons/4.7.0/index.umd.min.js",
+        "/assets/root/js/vendors/ant-design-icons/5.4.0/index.umd.min.js",
     ),
     (
         "react-virtualized",
@@ -86,11 +89,21 @@ pub fn get_lib_import_map() -> HashMap<String, String> {
     map
 }
 
-pub fn get_root_config_url(config: &Config) -> Result<String> {
+pub fn get_root_config_url(config: &Config) -> Result<RootConfig> {
     let filename = config.frontend_dir.join("spa-config.json");
-    let json_string = fs::read_to_string(filename)?;
-    let root_config: RootConfig = serde_json::from_str(json_string.as_str())?;
-    Ok(root_config.url)
+    match fs::read_to_string(filename) {
+        Ok(json) => match serde_json::from_str(json.as_str()) {
+            Ok(root) => Ok(root),
+            Err(err) => Err(Error::RootConfigError(format!(
+                "Unable to parse root config file - {}",
+                err
+            ))),
+        },
+        Err(err) => Err(Error::RootConfigError(format!(
+            "Unable to read root config file - {}",
+            err
+        ))),
+    }
 }
 
 pub async fn fetch_manifests(config: &Config) -> Result<AssetImport> {
@@ -119,21 +132,34 @@ pub async fn fetch_manifests(config: &Config) -> Result<AssetImport> {
 }
 
 async fn fetch_manifest(name: &str, url: &str) -> Result<AssetManifest> {
-    let response = Client::new()
+    let result = Client::new()
         .get(url)
         .header(reqwest::header::USER_AGENT, USER_AGENT)
         .header(reqwest::header::CONTENT_TYPE, JSON_CONTENT_TYPE)
         .send()
-        .await?;
+        .await;
 
-    if response.status().is_success() {
-        let manifest: AssetManifest = response.json().await?;
-        Ok(manifest)
-    } else {
-        Err(anyhow!(
+    match result {
+        Ok(response) => {
+            if response.status().is_success() {
+                match response.json().await {
+                    Ok(manifest) => Ok(manifest),
+                    Err(err) => Err(Error::ManifestError(format!(
+                        "Unable to parse asset manifest for {}. Error: {}",
+                        name, err
+                    ))),
+                }
+            } else {
+                Err(Error::ManifestError(format!(
+                    "Unable to fetch asset manifest for {}. Error: {}",
+                    name,
+                    response.status()
+                )))
+            }
+        }
+        Err(err) => Err(Error::ManifestError(format!(
             "Unable to fetch asset manifest for {}. Error: {}",
-            name,
-            response.status()
-        ))
+            name, err
+        ))),
     }
 }

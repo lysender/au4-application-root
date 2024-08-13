@@ -1,13 +1,11 @@
 use askama::Template;
-use axum::http::HeaderMap;
-use axum::{
-    extract::State,
-    response::{Html, IntoResponse},
-};
+use axum::body::Body;
+use axum::{extract::State, response::Response};
 use serde::Serialize;
 use std::collections::HashMap;
 
 use crate::manifest::fetch_manifests;
+use crate::Result;
 use crate::{
     manifest::{get_lib_import_map, get_root_config_url},
     run::AppState,
@@ -17,7 +15,6 @@ use crate::{
 #[template(path = "index.html")]
 struct IndexData {
     ga_tag_id: Option<String>,
-    stripe_publishable_key: String,
     spa_config_url: String,
     portals: ImportMap,
     import_map: ImportMap,
@@ -29,10 +26,10 @@ struct ImportMap {
     imports: HashMap<String, String>,
 }
 
-pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn handler_index(State(state): State<AppState>) -> Result<Response<Body>> {
     let config = state.config.clone();
-    let manifests = fetch_manifests(&config).await.unwrap();
-    let root_config_url = get_root_config_url(&config).expect("Unable to get root config url.");
+    let manifests = fetch_manifests(&config).await?;
+    let root_config = get_root_config_url(&config)?;
 
     let portals = ImportMap {
         imports: manifests.portals,
@@ -43,23 +40,23 @@ pub async fn handler_index(State(state): State<AppState>) -> impl IntoResponse {
 
     let tpl = IndexData {
         ga_tag_id: config.ga_tag_id.clone(),
-        stripe_publishable_key: config.stripe_publishable_key.clone(),
-        spa_config_url: root_config_url,
+        spa_config_url: root_config.url,
         portals,
         import_map,
         css_files: manifests.css_files,
     };
 
-    let mut headers = HeaderMap::new();
-    headers.insert("Surrogate-Control", "no-store".parse().unwrap());
-    headers.insert(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, proxy-revalidate"
-            .parse()
-            .unwrap(),
-    );
-    headers.insert("Pragma", "no-cache".parse().unwrap());
-    headers.insert("Expires", "0".parse().unwrap());
+    let res = Response::builder()
+        .status(200)
+        .header("Surrogate-Control", "no-store")
+        .header(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
+        )
+        .header("Pragma", "no-cache")
+        .header("Expires", "0")
+        .body(Body::from(tpl.render().unwrap()))
+        .unwrap();
 
-    (headers, Html(tpl.render().unwrap()))
+    Ok(res)
 }

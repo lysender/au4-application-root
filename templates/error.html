@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" style="overflow-y: hidden;">
+<head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Error - {{ error.title }}</title>
+</head>
+<body>
+    <article class="message is-danger">
+        <div class="message-header">
+            <p>{{ error.message }}</p>
+        </div>
+        <div class="message-body">
+            {{ error.description }}
+        </div>
+    </article>
+</body>
+</html>

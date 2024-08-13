@@ -10,9 +10,8 @@ use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
 use tracing::info;
 use tracing::Level;
 
-use crate::config::Config;
-use crate::error::Result;
 use crate::web::handler_index;
+use crate::{Config, Result};
 
 #[derive(Clone, FromRef)]
 pub struct AppState {
