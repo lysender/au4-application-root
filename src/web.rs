@@ -15,6 +15,7 @@ use crate::{
 #[template(path = "index.html")]
 struct IndexData {
     ga_tag_id: Option<String>,
+    stripe_publishable_key: String,
     spa_config_url: String,
     portals: ImportMap,
     import_map: ImportMap,
@@ -40,6 +41,7 @@ pub async fn handler_index(State(state): State<AppState>) -> Result<Response<Bod
 
     let tpl = IndexData {
         ga_tag_id: config.ga_tag_id.clone(),
+        stripe_publishable_key: config.stripe_publishable_key.clone(),
         spa_config_url: root_config.url,
         portals,
         import_map,

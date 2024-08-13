@@ -58,23 +58,6 @@ impl core::fmt::Display for Error {
     }
 }
 
-/// Allow Error to be converted to StatusCode
-impl From<Error> for StatusCode {
-    fn from(err: Error) -> Self {
-        match err {
-            Error::AnyError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::ConfigError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::RootConfigError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::ManifestError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::ValidationError(_) => StatusCode::BAD_REQUEST,
-            Error::BadRequest(_) => StatusCode::BAD_REQUEST,
-            Error::Forbidden(_) => StatusCode::FORBIDDEN,
-            Error::JsonParseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::ServiceError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        }
-    }
-}
-
 // Allow error to be converted to response
 impl IntoResponse for Error {
     fn into_response(self) -> Response<Body> {
