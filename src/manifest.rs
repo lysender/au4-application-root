@@ -20,6 +20,22 @@ pub struct RootConfig {
     pub url: String,
 }
 
+#[derive(Deserialize)]
+pub struct RootConfigV2 {
+    #[serde(rename = "src/root-config-legacy.js")]
+    pub entry: AssetEntry,
+}
+
+#[derive(Deserialize)]
+pub struct AssetEntry {
+    pub file: String,
+    pub name: String,
+    pub src: String,
+
+    #[serde(rename = "isEntry")]
+    pub is_entry: bool,
+}
+
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
 const JSON_CONTENT_TYPE: &str = "application/json";
 

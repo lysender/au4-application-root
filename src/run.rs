@@ -53,6 +53,7 @@ pub async fn run(config: Config) -> Result<()> {
 
 fn routes_static(dir: &PathBuf) -> Router {
     let target_dir = dir.join("public");
+    let dist_dir = dir.join("dist");
     Router::new()
         .nest_service(
             "/assets",
@@ -63,7 +64,7 @@ fn routes_static(dir: &PathBuf) -> Router {
             "/images",
             get_service(ServeDir::new(target_dir.join("images"))),
         )
-        .nest_service("/js", get_service(ServeDir::new(target_dir.join("js"))))
+        .nest_service("/js", get_service(ServeDir::new(dist_dir.join("js"))))
         .nest_service(
             "/manifest.json",
             get_service(ServeFile::new(target_dir.join("manifest.json"))),
