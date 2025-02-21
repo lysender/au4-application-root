@@ -73,18 +73,6 @@ impl IntoResponse for Error {
     }
 }
 
-impl ErrorInfo {
-    /// Creates a generic internal server error
-    pub fn new(message: String) -> Self {
-        Self {
-            status_code: StatusCode::INTERNAL_SERVER_ERROR,
-            title: "Internal Server Error".to_string(),
-            message: message.clone(),
-            description: message,
-        }
-    }
-}
-
 impl From<Error> for ErrorInfo {
     fn from(e: Error) -> Self {
         match e {
