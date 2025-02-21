@@ -1,14 +1,14 @@
+use axum::Router;
 use axum::extract::FromRef;
 use axum::routing::{get, get_service};
-use axum::Router;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
-use tracing::info;
 use tracing::Level;
+use tracing::info;
 
 use crate::web::handler_index;
 use crate::{Config, Result};
@@ -29,7 +29,7 @@ pub async fn run(config: Config) -> Result<()> {
     let routes_all = Router::new()
         .merge(routes_index(state.clone()))
         .merge(routes_static(&frontend_dir))
-        .fallback_service(routes_fallback(state))
+        .fallback(get(handler_index).with_state(state.clone()))
         .layer(
             ServiceBuilder::new().layer(
                 TraceLayer::new_for_http()
@@ -79,10 +79,4 @@ fn routes_index(state: AppState) -> Router {
     Router::new()
         .route("/", get(handler_index))
         .with_state(state)
-}
-
-fn routes_fallback(state: AppState) -> Router {
-    // Catch all request that don't match the static files
-    // and other routes
-    Router::new().nest_service("/", get(handler_index).with_state(state))
 }
